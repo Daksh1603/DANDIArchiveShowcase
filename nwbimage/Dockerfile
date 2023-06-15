@@ -21,9 +21,9 @@ COPY --from=clone nwb-explorer/webapp/ .
 
 RUN npm run build
 
-RUN mv nwb-explorer/node_modules/@geppettoengine .
-RUN rm nwb-explorer/-Rf node_modules/*
-RUN mv nwb-explorer/@geppettoengine node_modules
+#RUN mv nwb-explorer/node_modules/@geppettoengine .
+#RUN rm nwb-explorer/-Rf node_modules/*
+#RUN mv nwb-explorer/@geppettoengine node_modules
 
 ###
 FROM jupyter/base-notebook:hub-1.4.2
