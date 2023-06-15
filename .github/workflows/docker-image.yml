@@ -1,0 +1,53 @@
+name: Build Docker
+
+on:
+  schedule:
+    - cron: "1 1 1 */1 *"
+  push:
+    branches: [ main, dev, fix* ]
+  pull_request:
+    branches: [ main, dev, fix* ]
+
+jobs:
+  build:
+
+    runs-on: [ubuntu-latest]
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.10" ]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python  ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version:  ${{ matrix.python-version }}
+
+    - name: Build Docker image
+      run: |
+        ./generateDocker.sh
+        docker run -v $PWD:/home/jovyan/nwb-explorer/local:rw  dandi_docker /bin/bash -c 'python3 -V'
+    - name: Test just generate readme
+      run: |
+      
+        echo Testing generation of readme...
+        docker run -v $PWD:/root/local:rw  -w /root/local  dandi_docker  /bin/bash  -c 'python3 nwb_table_readme.py --update_readme_only'
+        ls -alt validation_folder
+    
+    - name: Test building OSB version of NWBE
+      run: |
+        cd nwbimage
+        time docker build -t mynwbosb -f Dockerfile .
+        
+    - name: Test on limited set of dandisets
+      run: |
+        echo Testing again 
+        docker run -v $PWD:/root/local:rw  -w /root/local  dandi_docker  /bin/bash -c 'python3 nwb_table_readme.py --dandiset_limit'
+        ls -alt validation_folder
+      
+    - name: Final version info
+      run: |
+        docker images
+        docker system df 
