@@ -203,6 +203,7 @@ def create_dandiset_summary(args_nodownload=None,args_nosizelimit=None,args_dand
     return args_updatereadme
 
 def test_nwbe_compatibility(nwb_path):
+    print(nwb_path)	
     cmd = 'python compatibility_test.py ' + nwb_path  # the external command to run
     timeout_s = 60  # how many seconds to wait
     type_hierarchy = set([ImageSeries,TimeSeries,BehavioralTimeSeries,BehavioralEvents])
