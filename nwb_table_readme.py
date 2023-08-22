@@ -56,6 +56,8 @@ def create_dandiset_summary(args_nodownload=None,args_nosizelimit=None,args_dand
     if args_dandisetlimit:
         dandiset_folder_name = dandiset_folder_name[10:20]
     yaml_file = 'dandiset.yaml'
+    
+    blacklisted_dandisets = set(['000015'])
 
     yaml_df_flatten = ['identifier','citation','name','assetsSummary.numberOfBytes','assetsSummary.numberOfFiles',
                        'assetsSummary.numberOfSubjects','assetsSummary.variableMeasured','keywords','schemaKey','schemaVersion','url','version']
@@ -150,9 +152,14 @@ def create_dandiset_summary(args_nodownload=None,args_nosizelimit=None,args_dand
                         break
 
             report_message = []
+                
             # if user doesn't want to download files
             if args_nodownload:
                 validation_summary = 'NOT_DOWNLOADED'
+                
+            else if dandiset_name in blacklisted_dandisets:
+                validation_summary = 'MEMORY_ERROR'
+                
             # only download files whose sizes are lower than the hard limit
             else:
                 # in case files larger than the hard_limit and not downloaded
@@ -289,6 +296,11 @@ def nwb_inspector_message_format(report_message,dds_id,save_folder,detailed_repo
     if os.path.exists(validation_file) and validation_summary == '':
         validation_summary = 'PASSED_VALIDATION'
     return validation_summary
+def create_summary():
+    
+def update_summary_metadata():
+    
+def update_summary_data():
 
 def update_readme():
     save_folder = 'validation_folder'
@@ -429,7 +441,7 @@ def update_readme():
                         readme += 'Size: %s MB | \n' % (str(round(int(file_size)/1000000,2)))
                         readme += '[File info](%s) | \n' % (info_link)
                         readme += '[View on DANDI Web](%s) | \n' % (dandi_link)
-                        readme += '[View on NWB Explorer](%s) \n' % (nwbe_link)
+                        readme += '[View on NWB Explorer](%s) \n' % (nwbe_link) 
 
             else:
                 readme += '- ![#dd0000](https://via.placeholder.com/15/dd0000/dd0000.png) Validation results summary: ' + dandi_metadata_readme['validation_summary'].iloc[row] + '\n\n'
